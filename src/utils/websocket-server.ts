@@ -1,8 +1,9 @@
-import { WebSocketServer, WebSocket } from 'ws';
+import { WebSocketServer, WebSocket as WsWebSocket } from 'ws';
 import { handleWebSocketMessage, WebSocketMessage } from './websocket';
+import { initializeWebSocketHandlers } from './websocket-handlers';
 
 let wsServer: WebSocketServer | undefined;
-let connectedClients: Set<WebSocket> = new Set();
+let connectedClients: Set<WsWebSocket> = new Set();
 
 const WS_PORT = 8443;
 
@@ -11,16 +12,17 @@ const WS_PORT = 8443;
  */
 export function startWebSocketServer(): void {
     try {
+        initializeWebSocketHandlers();
         wsServer = new WebSocketServer({ port: WS_PORT });
 
-        wsServer.on('connection', (ws: WebSocket) => {
+        wsServer.on('connection', (ws: WsWebSocket) => {
             console.log(`[WebSocket] Client connected. Total clients: ${connectedClients.size + 1}`);
             connectedClients.add(ws);
 
             ws.on('message', async (data: Buffer) => {
                 try {
                     const message: WebSocketMessage = JSON.parse(data.toString());
-                    await handleWebSocketMessage(message, ws);
+                    await handleWebSocketMessage(message, ws as any);
                 } catch (error) {
                     console.error('[WebSocket] Error parsing message:', error);
                     ws.send(JSON.stringify({
@@ -76,7 +78,7 @@ export function stopWebSocketServer(): void {
 /**
  * Get the set of connected WebSocket clients
  */
-export function getConnectedClients(): Set<WebSocket> {
+export function getConnectedClients(): Set<WsWebSocket> {
     return new Set(connectedClients);
 }
 

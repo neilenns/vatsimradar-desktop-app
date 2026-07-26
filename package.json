@@ -29,6 +29,7 @@
     "@eslint/js": "10.0.1",
     "@stylistic/eslint-plugin": "5.10.0",
     "@types/electron-squirrel-startup": "1.0.2",
+    "@types/ws": "^8.18.1",
     "@typescript-eslint/parser": "8.65.0",
     "electron": "43.2.0",
     "electron-squirrel-startup": "1.0.1",
