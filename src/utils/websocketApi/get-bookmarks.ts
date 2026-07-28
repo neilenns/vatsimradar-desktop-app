@@ -24,7 +24,5 @@ export async function handleGetBookmarks(
     console.log("[WebSocket] Received bookmarks from main process:", bookmarks);
   }
 
-  ipcMain.on(IPC_CHANNELS.RESPONSE_BOOKMARKS, onResponse);
-
   getMainWindow().webContents.send(IPC_CHANNELS.REQUEST_BOOKMARKS);
 }

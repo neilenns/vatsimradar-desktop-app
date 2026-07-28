@@ -1,9 +1,9 @@
 import { ipcRenderer, contextBridge, IpcRendererEvent } from "electron";
 import {
   IPC_CHANNELS,
-  BookmarksRequestPayload,
-  BookmarksResponsePayload,
   Bookmark,
+  BookmarksRequestMessage,
+  BookmarksResponseMessage,
 } from "./shared/ipc";
 
 const appOrigin = import.meta.env.VITE_DOMAIN
@@ -23,6 +23,12 @@ window.addEventListener("message", (event) => {
     ipcRenderer.send("reload");
   } else if (event.data?.type === "tray") {
     ipcRenderer.send("tray:set", event.data.value === true);
+  } else if (event.data?.type === "bookmarks:response") {
+    const message: BookmarksResponseMessage = {
+      type: "bookmarks:response",
+      bookmarks: event.data.bookmarks as Bookmark[],
+    };
+    ipcRenderer.send(IPC_CHANNELS.RESPONSE_BOOKMARKS, message);
   }
 });
 
@@ -30,19 +36,11 @@ ipcRenderer.on("efbX", (_event, action: "pause" | "resume") => {
   window.postMessage({ type: "efbX", action }, appOrigin ?? "*");
 });
 
+ipcRenderer.on(IPC_CHANNELS.REQUEST_BOOKMARKS, (_event: IpcRendererEvent) => {
+  const msg: BookmarksRequestMessage = { type: "bookmarks:request" };
+  window.postMessage(msg, appOrigin ?? "*");
+});
+
 contextBridge.exposeInMainWorld("vatsimRadar", {
   getTrayValue: (): Promise<boolean> => ipcRenderer.invoke("tray:get"),
-
-  onBookmarksRequested(callback: () => void): () => void {
-    const listener = (_event: IpcRendererEvent) => callback();
-
-    ipcRenderer.on(IPC_CHANNELS.REQUEST_BOOKMARKS, listener);
-    // return an unsubscribe function
-    return () =>
-      ipcRenderer.removeListener(IPC_CHANNELS.REQUEST_BOOKMARKS, listener);
-  },
-
-  sendBookmarksResponse(bookmarks: Bookmark[]): void {
-    ipcRenderer.send(IPC_CHANNELS.RESPONSE_BOOKMARKS, bookmarks);
-  },
 });

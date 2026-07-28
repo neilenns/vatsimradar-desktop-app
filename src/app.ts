@@ -17,7 +17,7 @@ import { initApplicationMenu } from "./utils/application-menu";
 import {
   startWebSocketServer,
   stopWebSocketServer,
-} from "./utils/websocket-server";
+} from "./utils/websocketApi/websocket-server";
 
 // @ts-expect-error Non-esm
 if (Squirell.default) {
