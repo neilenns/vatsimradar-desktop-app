@@ -33,10 +33,12 @@ window.addEventListener("message", (event) => {
 });
 
 ipcRenderer.on("efbX", (_event, action: "pause" | "resume") => {
+  console.log(`[Preload] Received ${action} action from main process`);
   window.postMessage({ type: "efbX", action }, appOrigin ?? "*");
 });
 
 ipcRenderer.on(IPC_CHANNELS.REQUEST_BOOKMARKS, (_event: IpcRendererEvent) => {
+  console.log("[Preload] Received request for bookmarks from main process");
   const msg: BookmarksRequestMessage = { type: "bookmarks:request" };
   window.postMessage(msg, appOrigin ?? "*");
 });

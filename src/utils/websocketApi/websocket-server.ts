@@ -9,19 +9,20 @@ import { handleGetBookmarks } from "./get-bookmarks";
 let wsServer: WebSocketServer | undefined;
 let connectedClients: Set<WsWebSocket> = new Set();
 
-const WS_PORT = 8443;
-
-const initializeWebSocketHandlers = () => {
+function initializeWebSocketHandlers() {
   registerWebSocketHandler("get-bookmarks", handleGetBookmarks);
-};
+}
 
 /**
  * Start the WebSocket server
  */
-export const startWebSocketServer = () => {
+export function startWebSocketServer() {
   try {
     initializeWebSocketHandlers();
-    wsServer = new WebSocketServer({ port: WS_PORT });
+
+    wsServer = new WebSocketServer({
+      port: 8443,
+    });
 
     wsServer.on("connection", (ws: WsWebSocket) => {
       console.log(
@@ -60,11 +61,11 @@ export const startWebSocketServer = () => {
       console.error("[WebSocket] Server error:", error);
     });
 
-    console.log(`[WebSocket] Server started on ws://localhost:${WS_PORT}`);
+    console.log(`[WebSocket] Server started on ws://localhost:8443`);
   } catch (error) {
     console.error("[WebSocket] Failed to start server:", error);
   }
-};
+}
 
 /**
  * Stop the WebSocket server
