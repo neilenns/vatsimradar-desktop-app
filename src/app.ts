@@ -59,6 +59,13 @@ if (process.platform === "win32") {
   app.setAppUserModelId(appUserModelId);
 }
 
+export const getMainWindow = (): BrowserWindow => {
+  if (!mainWindow || mainWindow.isDestroyed()) {
+    throw new Error("Main window is not available");
+  }
+  return mainWindow;
+};
+
 const initAutoUpdates = () => {
   const updateFeedBaseUrl = `${updateBaseUrl}/${process.platform}/${process.arch}`;
 
